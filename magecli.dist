@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+$rootDir = dirname(__FILE__);
+
+// Include composer packages.
+require_once $rootDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+
+// Include all the classes.
+use Symfony\Component\Console\Application as SymfonyConsole;
+use Ez\MageCli\Application as EzMageCliConsole;
+use Ez\MageBridge\MageBridge;
+
+$ezMageCliConsole = new EzMageCliConsole(
+    new SymfonyConsole(),
+    array(
+        'psr0' => array(
+            $rootDir.DIRECTORY_SEPARATOR.'magento'.DIRECTORY_SEPARATOR.'shell'.DIRECTORY_SEPARATOR.'commands'
+        ),
+        'mageExtension' => '*'
+    ),
+    new MageBridge(
+        $rootDir.DIRECTORY_SEPARATOR.'magento',
+        'admin',
+        'store'
+    )
+);
+$ezMageCliConsole->run();
