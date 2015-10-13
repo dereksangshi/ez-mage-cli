@@ -1,28 +1,52 @@
 #!/usr/bin/env php
 <?php
 
+$ds = DIRECTORY_SEPARATOR;
 $rootDir = dirname(__FILE__);
+$mageRootDir = $rootDir.$ds.'magento';
 
 // Include composer packages.
-require_once $rootDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+require_once $rootDir.$ds.'vendor'.$ds.'autoload.php';
 
 // Include all the classes.
 use Symfony\Component\Console\Application as SymfonyConsole;
 use Ez\MageCli\Application as EzMageCliConsole;
 use Ez\MageBridge\MageBridge;
+use Ez\MageBridge\MageEnv;
 
-$ezMageCliConsole = new EzMageCliConsole(
-    new SymfonyConsole(),
+// Configurations for the finders.
+$mageEnv = new MageEnv();
+$mageEnv
+    ->setMageRootDir($mageRootDir)
+    ->setAppCode('admin')
+    ->setAppType('store');
+$mageBridge = new MageBridge($mageEnv);
+$findersConfig = array(
     array(
-        'psr0' => array(
-            $rootDir.DIRECTORY_SEPARATOR.'magento'.DIRECTORY_SEPARATOR.'shell'.DIRECTORY_SEPARATOR.'commands'
-        ),
-        'mageExtension' => '*'
+        'type' => 'dir',
+        'options' => array(
+            'classes_cache_filename' => $mageRootDir.$ds.'var'.$ds.'dir_command_classes',
+            'classes_finder_options' => array(
+                'dirs' => array(
+                    $mageRootDir.$ds.'shell'.$ds.'commands' => 'Ez_MageCli_Command'
+                )
+            )
+        )
     ),
-    new MageBridge(
-        $rootDir.DIRECTORY_SEPARATOR.'magento',
-        'admin',
-        'store'
+    array(
+        'type' => 'mageExtension',
+        'options' => array(
+            'classes_cache_filename' => $mageRootDir.$ds.'var'.$ds.'mage_extensions_command_classes',
+            'classes_finder_options' => array(
+                'mage_bridge' => $mageBridge,
+                'extension_names' => '*'
+            )
+        )
     )
 );
+$ezMageCliConsole = new EzMageCliConsole(
+    new SymfonyConsole(),
+    $findersConfig
+);
 $ezMageCliConsole->run();
+

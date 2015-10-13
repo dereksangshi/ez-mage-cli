@@ -2,17 +2,19 @@
 
 namespace Ez\MageCli\Command\Finder;
 
-use Ez\MageCli\Command\Finder\ClassesFinder\MageExtension as ClassesFinderMageExtension;
+use Ez\MageCli\Command\Finder\ClassesFinder\Dir as ClassesFinderDir;
 
-class MageExtension extends FinderAbstract
+class Dir extends FinderAbstract
 {
     /**
-     * @return ClassesFinderMageExtension
+     * Get classes finder.
+     *
+     * @return ClassesFinderAbstract
      */
     public function getClassesFinder()
     {
         if (!isset($this->classesFinder)) {
-            $this->classesFinder = new ClassesFinderMageExtension($this->getClassesFinderOptions());
+            $this->classesFinder = new ClassesFinderDir($this->getClassesFinderOptions());
         }
         return $this->classesFinder;
     }
@@ -24,7 +26,8 @@ class MageExtension extends FinderAbstract
     {
         $commandClasses = $this->findCommandClasses();
         if (count($commandClasses) > 0) {
-            foreach ($commandClasses as $cc) {
+            foreach ($commandClasses as $filename => $cc) {
+                require_once $filename;
                 if (class_exists($cc, true)) {
                     $this->commands[] = new $cc();
                 }
