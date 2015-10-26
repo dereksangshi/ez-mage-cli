@@ -6,21 +6,25 @@ $rootDir = dirname(__FILE__);
 $mageRootDir = $rootDir.$ds.'magento';
 
 // Include composer packages.
-require_once $rootDir.$ds.'vendor'.$ds.'autoload.php';
+$composerLoader = require_once $rootDir.$ds.'vendor'.$ds.'autoload.php';
 
 // Include all the classes.
 use Symfony\Component\Console\Application as SymfonyConsole;
 use Ez\MageCli\Application as EzMageCliConsole;
 use Ez\MageBridge\MageBridge;
-use Ez\MageBridge\MageEnv;
+use Ez\MageBridge\Config as MageConfig;
 
 // Configurations for the finders.
-$mageEnv = new MageEnv();
-$mageEnv
-    ->setMageRootDir($mageRootDir)
-    ->setAppCode('admin')
-    ->setAppType('store');
-$mageBridge = new MageBridge($mageEnv);
+$mageConfig = new MageConfig();
+$mageConfig->updateConfig(
+    array(
+        'general' => array(
+            'mage_root_dir' => $mageRootDir,
+        )
+    )
+);
+$mageBridge = new MageBridge($mageConfig);
+$mageBridge->includeMage();
 $findersConfig = array(
     array(
         'type' => 'dir',
@@ -44,6 +48,9 @@ $findersConfig = array(
         )
     )
 );
+
+// Make sure composer loader will be used before Magento loader.
+$composerLoader->register(true);
 $ezMageCliConsole = new EzMageCliConsole(
     new SymfonyConsole(),
     $findersConfig

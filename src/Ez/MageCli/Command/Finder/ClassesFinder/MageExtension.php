@@ -65,7 +65,7 @@ class MageExtension extends FinderAbstract
      */
     protected function getAllExtensionNames()
     {
-        $extensionNames = $this->getMageBridge()->getMageInfo()->getExtensionNames();
+        $extensionNames = $this->getMageBridge()->_module_()->getAllExtensionNames();
         return is_array($extensionNames) ? $extensionNames : array();
     }
 
@@ -104,7 +104,7 @@ class MageExtension extends FinderAbstract
         foreach ($this->getExtensionNames() as $extensionName) {
             $extDir = $this
                 ->getMageBridge()
-                ->getMageInfo()
+                ->_module_()
                 ->getExtensionDir($extensionName).DIRECTORY_SEPARATOR.'Command';
             $files = scandir($extDir);
             if (count($files) > 0) {
