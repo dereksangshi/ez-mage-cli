@@ -6,6 +6,7 @@ use Symfony\Component\Console\Application as SymfonyConsole;
 use Ez\MageBridge\MageBridge;
 use Ez\MageCli\Command\Finder\FinderAbstract;
 use Ez\MageCli\Command\Finder\FinderInterface;
+use Ez\MageCli\Command\Finder\Builtin as BuiltinFinder;
 
 /**
  * Class Application
@@ -137,6 +138,9 @@ class Application
                 $commands = array_merge($commands, $finder->getCommands());
             }
         }
+        $builtinFinder = new BuiltinFinder();
+        $builtinFinder->setFindersOptions($this->getFindersOptions());
+        $commands = array_merge($commands, $builtinFinder->getCommands());
         return $commands;
     }
 
