@@ -25,7 +25,7 @@ class ClearCache extends BuiltinCommand
     public function configure()
     {
         $this
-            ->setName('builtin:clear_cache')
+            ->setName('clear_cache')
             ->setDescription('Clear mage cli cache.');
     }
 
