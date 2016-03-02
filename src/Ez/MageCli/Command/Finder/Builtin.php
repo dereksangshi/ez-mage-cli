@@ -58,13 +58,15 @@ class Builtin extends Dir
         $commandClasses = $this->findCommandClasses();
         if (count($commandClasses) > 0) {
             foreach ($commandClasses as $filename => $cc) {
-                require_once $filename;
-                if (class_exists($cc, true)) {
-                    $command = new $cc();
-                    if ($command instanceof BuiltinCommand) {
-                        $command->setFindersOptions($this->getFindersOptions());
+                if (file_exists($filename)) {
+                    require_once $filename;
+                    if (class_exists($cc, true)) {
+                        $command = new $cc();
+                        if ($command instanceof BuiltinCommand) {
+                            $command->setFindersOptions($this->getFindersOptions());
+                        }
+                        $this->commands[] = $command;
                     }
-                    $this->commands[] = $command;
                 }
             }
         }

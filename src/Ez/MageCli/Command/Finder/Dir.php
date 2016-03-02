@@ -27,9 +27,11 @@ class Dir extends FinderAbstract
         $commandClasses = $this->findCommandClasses();
         if (count($commandClasses) > 0) {
             foreach ($commandClasses as $filename => $cc) {
-                require_once $filename;
-                if (class_exists($cc, true)) {
-                    $this->commands[] = new $cc();
+                if (file_exists($filename)) {
+                    require_once $filename;
+                    if (class_exists($cc, true)) {
+                        $this->commands[] = new $cc();
+                    }
                 }
             }
         }
